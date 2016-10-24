@@ -72,7 +72,7 @@
 * Test deployments against those standards 
 
 # Ansible-review
-* https://github.com/willthames/ansible-review
+* [https://github.com/willthames/ansible-review](https://github.com/willthames/ansible-review)
 * Runs on individual files or even lines of
   individual files (good for diffs)
 * Needs a set of standards rules to be defined
@@ -81,7 +81,7 @@
 
 # Ansible-lint
 
-* [ansible-lint](https://github.com/willthames/ansible-lint)
+* [https://github.com/willthames/ansible-lint](https://github.com/willthames/ansible-lint)
   comes with a bunch of builtin rules (more with v3.0)
     - repeatability
     - idempotency
@@ -142,7 +142,7 @@ only warn.
 # Running ansible-review
 
 * `git ls-files | xargs ansible-review`
-* `git diff master | ansible-review` - to be implemented
+* `git diff master | ansible-review`
 * As a commit hook (add `-q` for just errors)
 
 # Roadmap for ansible-lint (v3.5.0)

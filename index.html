@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Will Thames" />
+  <meta name="dcterms.date" content="2016-10-25" />
+  <title>Automating Ansible Code Reviews</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css"/>
+  <link rel="stylesheet" href="overrides.css"/>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="reveal.js/css/theme/white.css" id="theme">
+  <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+  <script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = 'reveal.js/css/print/pdf.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Automating Ansible Code Reviews</h1>
+    <h2 class="author">Will Thames</h2>
+    <h3 class="date">25 October 2016</h3>
+</section>
+
+<section id="why-have-code-reviews" class="slide level1">
+<h1>Why have code reviews?</h1>
+<ul>
+<li>Spot bugs earlier</li>
+<li>Avoid unnecessary code (YAGNI)</li>
+<li>Encourage reuse (DRY)</li>
+<li>Avoid technical debt</li>
+</ul>
+</section>
+<section id="learning-from-reviews" class="slide level1">
+<h1>Learning from reviews</h1>
+<ul>
+<li>More heads =&gt; neater code</li>
+<li>Provides a means of building trust in new contributors</li>
+<li>Allows new contributors to learn from reviews</li>
+</ul>
+</section>
+<section id="why-have-standards" class="slide level1">
+<h1>Why have standards?</h1>
+<ul>
+<li>Consistency of code base, improves readability</li>
+<li>Rules are browsable, rather than found at review time.</li>
+<li>Standardise ahead of time, rather than arguing at review time</li>
+<li>Document best practices, and enforce them.</li>
+</ul>
+</section>
+<section id="how-do-we-manage-standards" class="slide level1">
+<h1>How do we manage standards?</h1>
+<ul>
+<li>standards are testable, best practices are guidance</li>
+<li>review process for new standards</li>
+<li>standards are versioned (best practices are not)</li>
+</ul>
+</section>
+<section id="main-rule-of-code-reviews" class="slide level1">
+<h1>Main rule of code reviews</h1>
+<ul>
+<li>It is not permissable to block a code review on an undocumented rule.</li>
+<li>This means writing new rules as new best practices are 'discovered'</li>
+</ul>
+</section>
+<section id="what-standards-exist" class="slide level1">
+<h1>What standards exist?</h1>
+<ul>
+<li>Ansible documents some <a href="http://docs.ansible.com/ansible/playbooks_best_practices.html">Best practices for playbooks</a></li>
+<li>We have our own standards for consistency sake
+<ul>
+<li>whitespace</li>
+<li>role versioning</li>
+<li>roles</li>
+<li>variable declaration location</li>
+<li>idempotency</li>
+</ul></li>
+</ul>
+</section>
+<section id="standards-evolve" class="slide level1">
+<h1>Standards evolve</h1>
+<figure>
+<img src="ansible-docs.png" alt="standards over time" /><figcaption>standards over time</figcaption>
+</figure>
+</section>
+<section id="why-automate-reviews" class="slide level1">
+<h1>Why automate reviews?</h1>
+<ul>
+<li>Avoids the boring bits of code reviews</li>
+<li>Automated checks can be performed <em>before</em> even committing.</li>
+<li>Actual code reviews seem less pedantic</li>
+</ul>
+</section>
+<section id="inspiration" class="slide level1">
+<h1>Inspiration</h1>
+<ul>
+<li><a href="https://www.youtube.com/watch?v=yPy44B9h820">Alexandra &amp; Matt's talk</a> on making the Right Way the Easy Way</li>
+<li>Have a versioned set of standards</li>
+<li>Test deployments against those standards</li>
+</ul>
+</section>
+<section id="ansible-review" class="slide level1">
+<h1>Ansible-review</h1>
+<ul>
+<li>https://github.com/willthames/ansible-review</li>
+<li>Runs on individual files or even lines of individual files (good for diffs)</li>
+<li>Needs a set of standards rules to be defined</li>
+<li>Roles and playbooks must declare standards version (e.g. <code># Standards: 1.2</code> in <code>meta/main.yml</code>)</li>
+</ul>
+</section>
+<section id="ansible-lint" class="slide level1">
+<h1>Ansible-lint</h1>
+<ul>
+<li><a href="https://github.com/willthames/ansible-lint">ansible-lint</a> comes with a bunch of builtin rules (more with v3.0)
+<ul>
+<li>repeatability</li>
+<li>idempotency</li>
+<li>readability</li>
+<li>etc.</li>
+</ul></li>
+<li>Added some internal ansible-lint rules to our repo too.</li>
+</ul>
+</section>
+<section id="ansible-review-standards" class="slide level1">
+<h1>Ansible-review standards</h1>
+<ul>
+<li>Based on ansible-lint checks</li>
+<li>Or write your own check in python</li>
+<li>A check takes a filename and settings</li>
+<li>And returns a <code>Result</code> object, which is effectively a list of <code>Error</code>s.</li>
+</ul>
+</section>
+<section id="how-does-it-work" class="slide level1">
+<h1>How does it work?</h1>
+<figure>
+<img src="flow.png" alt="ansible-review flow" /><figcaption>ansible-review flow</figcaption>
+</figure>
+<ul>
+<li>Each file in the input list is <em>classified</em>.</li>
+<li>The relevant rules for that classification are <em>selected</em>.</li>
+<li>The relevant rules are then <em>applied</em> to the file.</li>
+<li>Any resulting Errors are then <em>filtered</em> to match the lines being reviewed.</li>
+</ul>
+</section>
+<section id="a-sample-standard-rule" class="slide level1">
+<h1>A sample standard rule</h1>
+<pre><code>become_rather_than_sudo = Standard(dict(
+    name = &quot;Use become/become_user/become_method rather than sudo/sudo_user&quot;,
+    check = lintcheck(&#39;ANSIBLE0008&#39;),
+    types = [&quot;playbook&quot;, &quot;task&quot;]
+    version = &quot;0.9&quot;
+))
+
+standards = [
+  become_rather_than_sudo,
+  ...
+]</code></pre>
+</section>
+<section id="warnings" class="slide level1">
+<h1>Warnings</h1>
+<p>For things that aren't yet standards but are worth knowing about (e.g. deprecated behaviour), a standard without a version will never error, only warn.</p>
+</section>
+<section id="ansible-review-benefits" class="slide level1">
+<h1>Ansible-review benefits</h1>
+<ul>
+<li>Can review specific lines in set of files <code>ansible-review playbook.yml:14-18 otherthing.yml</code></li>
+<li>Can control which checks are important</li>
+<li>Can review older code against older versions for minor changes</li>
+</ul>
+</section>
+<section id="running-ansible-review" class="slide level1">
+<h1>Running ansible-review</h1>
+<ul>
+<li><code>git ls-files | xargs ansible-review</code></li>
+<li><code>git diff master | ansible-review</code> - to be implemented</li>
+<li>As a commit hook (add <code>-q</code> for just errors)</li>
+</ul>
+</section>
+<section id="roadmap-for-ansible-lint-v3.5.0" class="slide level1">
+<h1>Roadmap for ansible-lint (v3.5.0)</h1>
+<ul>
+<li>Be the backend of choice for ansible-review rules for playbooks, tasks and handlers.</li>
+<li>Be useful for review rules for other file types.</li>
+<li>Add config file to allow new rules to be added without breaking existing setups (and then update the default config on minor version changes)</li>
+</ul>
+</section>
+<section id="roadmap-for-ansible-review-v0.13.0" class="slide level1">
+<h1>Roadmap for ansible-review (v0.13.0)</h1>
+<ul>
+<li>Have a useful default set of standards</li>
+<li>Have a useful default set of lint rules that back those standards</li>
+<li>Move common standards code back into the main code base.</li>
+</ul>
+</section>
+<section id="conclusions" class="slide level1">
+<h1>Conclusions</h1>
+<ul>
+<li>ansible-review has helped in hundreds of reviews already.</li>
+<li>Few false positives (and those have often been bugs in the implementation rather than the idea).</li>
+</ul>
+</section>
+    </div>
+  </div>
+
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,         // Display controls in the bottom right corner
+        progress: true,         // Display a presentation progress bar
+        history: true,          // Push each slide change to the browser history
+        center: true,                       // Vertical centering of slides
+        maxScale: 1.5,                  // Bounds for smallest/largest possible content scale
+        slideNumber: false,                // Display the page number of the current slide
+        theme: 'white', // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+//          { src: 'reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
+//          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+]});
+    </script>
+    </body>
+</html>
