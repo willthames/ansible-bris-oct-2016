@@ -1,0 +1,8 @@
+digraph dummy { 
+  graph [rankdir=LR]
+  classify -> select_rules -> apply_rules -> filter_results
+  classify [shape="box"; label="classify"; fontname="Geneva"]
+  select_rules [shape="box"; label="select rules"; fontname="Geneva"]
+  apply_rules [shape="box"; label="apply rules"; fontname="Geneva"]
+  filter_results [shape="box"; label="filter results"; fontname="Geneva"]
+}
